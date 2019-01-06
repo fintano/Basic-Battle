@@ -13,6 +13,15 @@ class ABasicBattleGameMode : public AGameModeBase
 
 public:
 	ABasicBattleGameMode();
+	virtual void BeginPlay() override;
+	virtual void Tick(float DeltaSeconds) override;
+
+	void OnPlayerDead();
+	void OnEnemyDead();
+
+
+private:
+
 };
 
 

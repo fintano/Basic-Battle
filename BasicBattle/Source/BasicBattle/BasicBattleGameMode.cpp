@@ -17,3 +17,21 @@ ABasicBattleGameMode::ABasicBattleGameMode()
 		DefaultPawnClass = PlayerPawnBPClass.Class;
 	}
 }
+
+void ABasicBattleGameMode::BeginPlay()
+{
+	Super::BeginPlay();
+}
+
+void ABasicBattleGameMode::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+}
+
+void ABasicBattleGameMode::OnPlayerDead()
+{
+}
+
+void ABasicBattleGameMode::OnEnemyDead()
+{
+}

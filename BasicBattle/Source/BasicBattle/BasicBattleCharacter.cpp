@@ -8,8 +8,12 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "GameFramework/DamageType.h"
 #include "HeadMountedDisplayFunctionLibrary.h"
 #include "Materials/Material.h"
+#include "Components/StaticMeshComponent.h"
+#include "Components/SkeletalMeshComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "Engine/World.h"
 
 ABasicBattleCharacter::ABasicBattleCharacter()
@@ -57,10 +61,16 @@ ABasicBattleCharacter::ABasicBattleCharacter()
 	PrimaryActorTick.bStartWithTickEnabled = true;
 }
 
+void ABasicBattleCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+}
+
 void ABasicBattleCharacter::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
 
+	/*
 	if (CursorToWorld != nullptr)
 	{
 		if (UHeadMountedDisplayFunctionLibrary::IsHeadMountedDisplayEnabled())
@@ -87,4 +97,106 @@ void ABasicBattleCharacter::Tick(float DeltaSeconds)
 			CursorToWorld->SetWorldRotation(CursorR);
 		}
 	}
+	*/
+}
+
+void ABasicBattleCharacter::SetupPlayerInputComponent(UInputComponent * PlayerInputComponent)
+{
+	Super::SetupPlayerInputComponent(PlayerInputComponent);
+}
+
+void ABasicBattleCharacter::PossessedBy(AController * NewController)
+{
+	UClass *AnimInstanceClass = AnimAssetClass.TryLoadClass<UAnimInstance>();
+	if (AnimInstanceClass)
+	{
+		UE_LOG(LogClass, Warning, TEXT("Loading Character Anim Asset.. "));
+		GetMesh()->SetAnimInstanceClass(AnimInstanceClass);
+	}
+}
+
+float ABasicBattleCharacter::TakeDamage(float Damage, const FDamageEvent & DamageEvent, AController * EventInstigator, AActor * DamageCauser)
+{
+	const float ActualDamage = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
+	/*
+	if (HOFPlayerState->PlayerData.HP.CheckOnMinValue())
+	{
+		auto gameMode = Cast<AHOFBattleGameMode>(GetWorld()->GetAuthGameMode());
+		gameMode->OnPlayerDead();
+		return 0.f;
+	}
+	*/
+	if (ActualDamage > 0.f)
+	{
+		//HOFPlayerState->PlayerData.HP(-ActualDamage);
+		//AB_LOG(Warning, TEXT("HP:%f"), HOFPlayerState->CurrentHP);
+
+		//if (HOFPlayerState->PlayerData.HP.CheckOnMinValue())
+			//HOFPlayerState->SetState(EHOFCharacterState::PLAYER_DEAD);
+	}
+	return ActualDamage;
+}
+
+void ABasicBattleCharacter::AttackHit()
+{
+	FHitResult HitResult(ForceInit);
+	FVector StartPos = GetActorLocation();
+	FVector EndPos = StartPos + GetActorForwardVector() * 100.0f;
+	auto TraceParams = GetTraceParams();
+	auto TraceObject = GetTraceObject(TArray<ECollisionChannel>{ECC_Pawn, ECC_WorldStatic});
+	
+	if (GetWorld()->SweepSingleByObjectType(HitResult, StartPos, EndPos, FQuat(), *TraceObject, FCollisionShape::MakeSphere(50.0f), *TraceParams))
+		GiveDamage(HitResult);
+		
+}
+
+TSharedPtr<FCollisionObjectQueryParams> ABasicBattleCharacter::GetTraceObject(const TArray<ECollisionChannel>& channels)
+{
+	auto TraceObject = MakeShared<FCollisionObjectQueryParams>();
+	for (auto channel : channels)
+		TraceObject->AddObjectTypesToQuery(channel);
+	return TraceObject;
+}
+
+TSharedPtr<FCollisionQueryParams> ABasicBattleCharacter::GetTraceParams()
+{
+	const FName TraceTag("MyTraceTag");
+	GetWorld()->DebugDrawTraceTag = TraceTag;
+
+	auto TraceParams = MakeShared<FCollisionQueryParams>(FName(TEXT("VictoreCore Trace")), true, this);
+	TraceParams->bTraceComplex = true;
+	TraceParams->bReturnPhysicalMaterial = false;
+	TraceParams->TraceTag = TraceTag;
+
+	//Ignore Actors
+	TraceParams->AddIgnoredActor(this);
+	return TraceParams;
+}
+
+void ABasicBattleCharacter::GiveDamage(const FHitResult & HitResult)
+{
+	float BaseDamage = 30.0f;
+	float WeaponDamage = 0.0f;
+
+	/*
+	// Get Attack Info from Current Weapon
+	const auto& SlotItem = Equip->GetEquippedItemBySlot(EHOFItemType::ITEM_MAIN_WEAPON);
+
+
+	do
+	{
+		if (!SlotItem)
+			break;
+
+		if (!SlotItem->IsWeaponItem())
+			break;
+
+		AHOFWeaponItem* Weapon = static_cast<AHOFWeaponItem*>(SlotItem);
+
+		WeaponDamage += Weapon->GetAttackDamage();
+	} while (0);
+	*/
+	float FinalDamage = BaseDamage + WeaponDamage;
+	FPointDamageEvent PointDamageEvent(FinalDamage, HitResult, GetActorForwardVector(), UDamageType::StaticClass());
+	HitResult.GetActor()->TakeDamage(FinalDamage, PointDamageEvent, GetController(), this);
 }

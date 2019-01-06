@@ -6,6 +6,8 @@
 #include "GameFramework/PlayerController.h"
 #include "BasicBattlePlayerController.generated.h"
 
+class ABasicBattleCharacter;
+
 UCLASS()
 class ABasicBattlePlayerController : public APlayerController
 {
@@ -19,6 +21,7 @@ protected:
 	uint32 bMoveToMouseCursor : 1;
 
 	// Begin PlayerController interface
+	virtual void BeginPlay() override;
 	virtual void PlayerTick(float DeltaTime) override;
 	virtual void SetupInputComponent() override;
 	// End PlayerController interface
@@ -38,6 +41,45 @@ protected:
 	/** Input handlers for SetDestination action. */
 	void OnSetDestinationPressed();
 	void OnSetDestinationReleased();
+	
+private:
+	ABasicBattleCharacter * PlayerCharacter;
+
+	float CurrentLeftRightVal;
+	float CurrentUpDownVal;
+
+	UFUNCTION()
+		void MoveForward(float NewInputVal);
+
+	UFUNCTION()
+		void MoveRight(float NewInputVal);
+
+	UFUNCTION()
+		void Turn(float NewInputVal);
+
+	UFUNCTION()
+		void LookUp(float NewInputVal);
+
+	UFUNCTION()
+		void JumpInput();
+
+	UFUNCTION()
+		void JumpIfNotInput();
+
+	UFUNCTION()
+		void Attack();
+
+	UFUNCTION()
+		void NotAttack();
+
+	UFUNCTION()
+		void Slot1();
+
+	UFUNCTION()
+		void Slot2();
+
+	UFUNCTION()
+		void SetStateToBattle();
 };
 
 

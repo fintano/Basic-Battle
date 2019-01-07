@@ -35,6 +35,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Damage")
 		void AttackHit();
 
+	UCameraComponent* GetCamera() {	return TopDownCameraComponent; }
+
 public : 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Collision")
 		class UCapsuleComponent* Capsule;
@@ -53,10 +55,7 @@ public :
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Camera")
 		class USpringArmComponent* SpringArm;
-
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Camera")
-		class UCameraComponent* Camera;
-
+	
 	UPROPERTY(config, EditDefaultsOnly, BlueprintReadWrite, Category = "Stat")
 		float MaxHP;
 

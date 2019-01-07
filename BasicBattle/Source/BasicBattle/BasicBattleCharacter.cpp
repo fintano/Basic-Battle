@@ -70,7 +70,6 @@ void ABasicBattleCharacter::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
 
-	/*
 	if (CursorToWorld != nullptr)
 	{
 		if (UHeadMountedDisplayFunctionLibrary::IsHeadMountedDisplayEnabled())
@@ -97,7 +96,7 @@ void ABasicBattleCharacter::Tick(float DeltaSeconds)
 			CursorToWorld->SetWorldRotation(CursorR);
 		}
 	}
-	*/
+	
 }
 
 void ABasicBattleCharacter::SetupPlayerInputComponent(UInputComponent * PlayerInputComponent)

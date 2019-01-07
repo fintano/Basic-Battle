@@ -74,7 +74,7 @@ void ABasicBattlePlayerController::MoveForward(float NewInputVal)
 	if (NewInputVal != 0.0f)
 	{
 		// find out which way is forward
-		FRotator Rotation = PlayerCharacter->Camera->GetComponentRotation();
+		FRotator Rotation = PlayerCharacter->GetCamera()->GetComponentRotation();
 		// Limit pitch when walking or falling
 		if (PlayerCharacter->GetCharacterMovement()->IsMovingOnGround() || PlayerCharacter->GetCharacterMovement()->IsFalling())
 		{
@@ -95,7 +95,7 @@ void ABasicBattlePlayerController::MoveRight(float NewInputVal)
 {
 	if (NewInputVal != 0.0f)
 	{
-		FRotator rotation = PlayerCharacter->Camera->GetComponentRotation(); //Controller->GetControlRotation();
+		FRotator rotation = PlayerCharacter->GetCamera()->GetComponentRotation(); //Controller->GetControlRotation();
 		const FVector direction = FRotationMatrix(rotation).GetScaledAxis(EAxis::Y);
 		PlayerCharacter->AddMovementInput(direction, NewInputVal);
 

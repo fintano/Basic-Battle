@@ -53,7 +53,7 @@ void ABasicBattlePlayerController::SetupInputComponent()
 	Super::SetupInputComponent();
 	//InputComponent->BindAxis("MoveRight", this, &AABPlayerController::LeftRightInput);
 	//InputComponent->BindAxis("MoveForward", this, &AABPlayerController::UpDownInput);
-
+	/*
 	InputComponent->BindAxis("MoveForward", this, &ABasicBattlePlayerController::MoveForward);
 	InputComponent->BindAxis("MoveRight", this, &ABasicBattlePlayerController::MoveRight);
 	InputComponent->BindAxis("Turn", this, &ABasicBattlePlayerController::Turn);
@@ -67,6 +67,7 @@ void ABasicBattlePlayerController::SetupInputComponent()
 	InputComponent->BindAction("Jump", IE_Released, this, &ABasicBattlePlayerController::JumpIfNotInput);
 	InputComponent->BindAction("Attack", IE_Pressed, this, &ABasicBattlePlayerController::Attack);
 	InputComponent->BindAction("Attack", IE_Released, this, &ABasicBattlePlayerController::NotAttack);
+	*/
 }
 
 void ABasicBattlePlayerController::MoveForward(float NewInputVal)

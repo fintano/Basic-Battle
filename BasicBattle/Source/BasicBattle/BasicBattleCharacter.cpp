@@ -15,6 +15,7 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Engine/World.h"
+#include "AbilitySystemComponent.h"
 
 ABasicBattleCharacter::ABasicBattleCharacter()
 {
@@ -56,6 +57,9 @@ ABasicBattleCharacter::ABasicBattleCharacter()
 	CursorToWorld->DecalSize = FVector(16.0f, 32.0f, 32.0f);
 	CursorToWorld->SetRelativeRotation(FRotator(90.0f, 0.0f, 0.0f).Quaternion());
 
+	// Our ability system component.
+	AbilitySystem = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystem"));
+
 	// Activate ticking in order to update the cursor every frame.
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = true;
@@ -64,6 +68,16 @@ ABasicBattleCharacter::ABasicBattleCharacter()
 void ABasicBattleCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+	if (AbilitySystem)
+	{
+		FGameplayAbilityActorInfo* actorInfo = new FGameplayAbilityActorInfo();
+		actorInfo->InitFromActor(this, this, AbilitySystem);
+		AbilitySystem->AbilityActorInfo = TSharedPtr<FGameplayAbilityActorInfo>(actorInfo);
+
+		if (HasAuthority() && Ability)
+			AbilitySystem->GiveAbility(FGameplayAbilitySpec(Ability.GetDefaultObject(), 1, 0));
+		AbilitySystem->InitAbilityActorInfo(this, this);
+	}
 }
 
 void ABasicBattleCharacter::Tick(float DeltaSeconds)
@@ -102,6 +116,7 @@ void ABasicBattleCharacter::Tick(float DeltaSeconds)
 void ABasicBattleCharacter::SetupPlayerInputComponent(UInputComponent * PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+	AbilitySystem->BindAbilityActivationToInputComponent(PlayerInputComponent, FGameplayAbilityInputBinds("ConfirmInput", "CancelInput", "AbilityInput"));
 }
 
 void ABasicBattleCharacter::PossessedBy(AController * NewController)
@@ -112,6 +127,8 @@ void ABasicBattleCharacter::PossessedBy(AController * NewController)
 		UE_LOG(LogClass, Warning, TEXT("Loading Character Anim Asset.. "));
 		GetMesh()->SetAnimInstanceClass(AnimInstanceClass);
 	}
+
+	AbilitySystem->RefreshAbilityActorInfo();
 }
 
 float ABasicBattleCharacter::TakeDamage(float Damage, const FDamageEvent & DamageEvent, AController * EventInstigator, AActor * DamageCauser)
@@ -198,4 +215,9 @@ void ABasicBattleCharacter::GiveDamage(const FHitResult & HitResult)
 	float FinalDamage = BaseDamage + WeaponDamage;
 	FPointDamageEvent PointDamageEvent(FinalDamage, HitResult, GetActorForwardVector(), UDamageType::StaticClass());
 	HitResult.GetActor()->TakeDamage(FinalDamage, PointDamageEvent, GetController(), this);
+}
+
+UAbilitySystemComponent * ABasicBattleCharacter::GetAbilitySystemComponent() const
+{
+	return AbilitySystem;
 }

@@ -35,6 +35,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Damage")
 		void AttackHit();
 
+	UFUNCTION(BlueprintCallable, Category = "Damage")
+		float GiveDamage(const FHitResult & HitResult);
+
 	UCameraComponent* GetCamera() {	return TopDownCameraComponent; }
 
 public : 
@@ -74,7 +77,6 @@ public :
 private:
 	TSharedPtr<FCollisionObjectQueryParams> GetTraceObject(const TArray<ECollisionChannel>& channels);
 	TSharedPtr<FCollisionQueryParams> GetTraceParams();
-	void GiveDamage(const FHitResult & HitResult);
 
 private:
 	/** Top down camera */

@@ -144,6 +144,7 @@ void ABasicBattleCharacter::AttackHit()
 	auto TraceParams = GetTraceParams();
 	auto TraceObject = GetTraceObject(TArray<ECollisionChannel>{ECC_Pawn, ECC_WorldStatic});
 	
+	//if (GetWorld()->LineTraceSingleByObjectType(HitResult, StartPos, EndPos, *TraceObject, *TraceParams))
 	if (GetWorld()->SweepSingleByObjectType(HitResult, StartPos, EndPos, FQuat(), *TraceObject, FCollisionShape::MakeSphere(50.0f), *TraceParams))
 		GiveDamage(HitResult);
 		
@@ -172,7 +173,7 @@ TSharedPtr<FCollisionQueryParams> ABasicBattleCharacter::GetTraceParams()
 	return TraceParams;
 }
 
-void ABasicBattleCharacter::GiveDamage(const FHitResult & HitResult)
+float ABasicBattleCharacter::GiveDamage(const FHitResult & HitResult)
 {
 	float BaseDamage = 30.0f;
 	float WeaponDamage = 0.0f;
@@ -197,5 +198,7 @@ void ABasicBattleCharacter::GiveDamage(const FHitResult & HitResult)
 	*/
 	float FinalDamage = BaseDamage + WeaponDamage;
 	FPointDamageEvent PointDamageEvent(FinalDamage, HitResult, GetActorForwardVector(), UDamageType::StaticClass());
-	HitResult.GetActor()->TakeDamage(FinalDamage, PointDamageEvent, GetController(), this);
+	float ResultDamage = HitResult.GetActor()->TakeDamage(FinalDamage, PointDamageEvent, GetController(), this);
+
+	return ResultDamage;
 }

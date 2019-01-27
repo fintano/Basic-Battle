@@ -37,7 +37,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Damage")
 		float GiveDamage(const FHitResult & HitResult);
-
+	
 	UCameraComponent* GetCamera() {	return TopDownCameraComponent; }
 
 public : 

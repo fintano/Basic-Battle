@@ -196,6 +196,12 @@ float ABasicBattleCharacter::GiveDamage(const FHitResult & HitResult)
 		WeaponDamage += Weapon->GetAttackDamage();
 	} while (0);
 	*/
+
+	if (HitResult.GetComponent()->GetFName() == FName(TEXT("HeadCollision")))
+	{
+		BaseDamage += BaseDamage;
+	}
+
 	float FinalDamage = BaseDamage + WeaponDamage;
 	FPointDamageEvent PointDamageEvent(FinalDamage, HitResult, GetActorForwardVector(), UDamageType::StaticClass());
 	float ResultDamage = HitResult.GetActor()->TakeDamage(FinalDamage, PointDamageEvent, GetController(), this);

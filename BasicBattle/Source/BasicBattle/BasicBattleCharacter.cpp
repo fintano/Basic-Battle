@@ -133,6 +133,9 @@ float ABasicBattleCharacter::TakeDamage(float Damage, const FDamageEvent & Damag
 		//if (HOFPlayerState->PlayerData.HP.CheckOnMinValue())
 			//HOFPlayerState->SetState(EHOFCharacterState::PLAYER_DEAD);
 	}
+
+	PlayHitAction();
+
 	return ActualDamage;
 }
 
@@ -207,4 +210,9 @@ float ABasicBattleCharacter::GiveDamage(const FHitResult & HitResult)
 	float ResultDamage = HitResult.GetActor()->TakeDamage(FinalDamage, PointDamageEvent, GetController(), this);
 
 	return ResultDamage;
+}
+
+void ABasicBattleCharacter::PlayHitAction_Implementation()
+{
+	return;
 }

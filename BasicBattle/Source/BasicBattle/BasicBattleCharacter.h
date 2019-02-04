@@ -37,6 +37,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Damage")
 		float GiveDamage(const FHitResult & HitResult);
+
+	UFUNCTION(BlueprintNativeEvent, Category = "Animation")
+		void PlayHitAction();
 	
 	UCameraComponent* GetCamera() {	return TopDownCameraComponent; }
 

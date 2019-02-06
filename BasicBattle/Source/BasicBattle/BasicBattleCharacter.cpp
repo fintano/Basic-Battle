@@ -125,16 +125,17 @@ float ABasicBattleCharacter::TakeDamage(float Damage, const FDamageEvent & Damag
 		return 0.f;
 	}
 	*/
+	PlayHitAction();
+
 	if (ActualDamage > 0.f)
 	{
-		//HOFPlayerState->PlayerData.HP(-ActualDamage);
-		//AB_LOG(Warning, TEXT("HP:%f"), HOFPlayerState->CurrentHP);
+		CurrentHP -= ActualDamage;
 
-		//if (HOFPlayerState->PlayerData.HP.CheckOnMinValue())
-			//HOFPlayerState->SetState(EHOFCharacterState::PLAYER_DEAD);
+		if (CurrentHP <= 0.f)
+		{
+			isAlive = false;
+		}
 	}
-
-	PlayHitAction();
 
 	return ActualDamage;
 }

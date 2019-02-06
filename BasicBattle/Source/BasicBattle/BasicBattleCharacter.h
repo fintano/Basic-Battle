@@ -71,8 +71,11 @@ public :
 	UPROPERTY(config)
 		TArray<FStringAssetReference>CharacterAssets;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "State")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "State")
 		bool isAttacking;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "State")
+		bool isAlive;
 
 	UPROPERTY(config)
 		FStringClassReference AnimAssetClass;

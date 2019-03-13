@@ -75,7 +75,10 @@ void ABasicBattleCharacter::BeginPlay()
 		AbilitySystem->AbilityActorInfo = TSharedPtr<FGameplayAbilityActorInfo>(actorInfo);
 
 		if (HasAuthority() && Ability)
+		{
 			AbilitySystem->GiveAbility(FGameplayAbilitySpec(Ability.GetDefaultObject(), 1, 0));
+			AbilitySystem->GiveAbility(FGameplayAbilitySpec(Ability.GetDefaultObject(), 1, 1));
+		}
 		AbilitySystem->InitAbilityActorInfo(this, this);
 	}
 }

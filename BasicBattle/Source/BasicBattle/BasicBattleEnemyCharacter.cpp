@@ -2,13 +2,28 @@
 
 #include "BasicBattleEnemyCharacter.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "BasicBattleAttributeSet.h"
+#include "AbilitySystemComponent.h"
 
 // Sets default values
 ABasicBattleEnemyCharacter::ABasicBattleEnemyCharacter()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+	// Our ability system component.
+	AbilitySystem = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("EnemyAbilitySystem"));
 
+	AttributeSet = CreateDefaultSubobject<UBasicBattleAttributeSet>(TEXT("EnemyAttributeSet"));
+}
+
+void ABasicBattleEnemyCharacter::PossessedBy(AController* NewController)
+{
+	// Initialize our abilities
+	//if (AbilitySystem)
+	//{
+	//	AbilitySystem->InitAbilityActorInfo(this, this);
+	//	AddStartupGameplayAbilities();
+	//}
 }
 
 // Called when the game starts or when spawned
@@ -108,4 +123,9 @@ float ABasicBattleEnemyCharacter::GiveDamage(const FHitResult & HitResult)
 	float ResultDamage = HitResult.GetActor()->TakeDamage(FinalDamage, PointDamageEvent, GetController(), this);
 
 	return ResultDamage;
+}
+
+UAbilitySystemComponent * ABasicBattleEnemyCharacter::GetAbilitySystemComponent() const
+{
+	return AbilitySystem;
 }

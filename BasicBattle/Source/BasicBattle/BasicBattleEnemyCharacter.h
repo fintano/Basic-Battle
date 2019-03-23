@@ -4,16 +4,20 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "AbilitySystemInterface.h"
 #include "BasicBattleEnemyCharacter.generated.h"
 
+class UBasicBattleAttributeSet;
+
 UCLASS()
-class BASICBATTLE_API ABasicBattleEnemyCharacter : public ACharacter
+class BASICBATTLE_API ABasicBattleEnemyCharacter : public ACharacter, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this character's properties
 	ABasicBattleEnemyCharacter();
+	virtual void PossessedBy(AController* NewController) override;
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Action")
 		void DoAttack();
@@ -38,6 +42,8 @@ public:
 private:
 	TSharedPtr<FCollisionObjectQueryParams> GetTraceObject(const TArray<ECollisionChannel>& channels);
 	TSharedPtr<FCollisionQueryParams> GetTraceParams();
+	// Inherited via IAbilitySystemInterface
+	virtual UAbilitySystemComponent * GetAbilitySystemComponent() const override;
 
 public : 
 
@@ -52,4 +58,10 @@ public :
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "State")
 		bool isAlive;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Abilities, meta = (AllowPrivateAccess = "true"))
+		class UAbilitySystemComponent* AbilitySystem;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+		UBasicBattleAttributeSet* AttributeSet;
 };

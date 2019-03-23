@@ -1,20 +1,27 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "BasicBattleAttributeSet.h"
+#include "GameplayEffect.h"
+#include "GameplayEffectExtension.h"
 
-UBasicBattleAttributeSet::UBasicBattleAttributeSet() : Super()
+UBasicBattleAttributeSet::UBasicBattleAttributeSet() : Super(), Health(100.f)
 {
 
 }
 
 bool UBasicBattleAttributeSet::PreGameplayEffectExecute(FGameplayEffectModCallbackData &Data)
 {
+	if (AttributeHealth() == Data.EvaluatedData.Attribute)
+		UE_LOG(LogClass, Display, TEXT("Attribute Health : %f"), Health.GetCurrentValue());
 	return true;
 }
 
 void UBasicBattleAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData &Data)
 {
 	Super::PostGameplayEffectExecute(Data);
+
+	if (AttributeHealth() == Data.EvaluatedData.Attribute)
+		UE_LOG(LogClass, Display, TEXT("Attribute Health : %f"), Health.GetCurrentValue());
 
 	//if (AttributeHealth() == Data.EvaluatedData.Attribute)
 	//{

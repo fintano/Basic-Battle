@@ -25,6 +25,7 @@ enum class AbilityInput : uint8
 		//Because abilities are granted by input ID, which is an int, you may use enum elements to describe the ID anyway however, because enums are fancily dressed up ints.
 };
 
+class UBasicBattleAttributeSet;
 
 UCLASS(Blueprintable)
 class ABasicBattleCharacter : public ACharacter, public IAbilitySystemInterface
@@ -87,6 +88,9 @@ public :
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Abilities)
 		TSubclassOf<class UGameplayAbility> Ability;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+		UBasicBattleAttributeSet* AttributeSet;
 
 	UPROPERTY(config, EditDefaultsOnly, BlueprintReadWrite, Category = "Stat")
 		float MaxHP;

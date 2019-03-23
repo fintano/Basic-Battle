@@ -16,6 +16,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Engine/World.h"
 #include "AbilitySystemComponent.h"
+#include "BasicBattleAttributeSet.h"
 
 ABasicBattleCharacter::ABasicBattleCharacter()
 {
@@ -59,6 +60,8 @@ ABasicBattleCharacter::ABasicBattleCharacter()
 
 	// Our ability system component.
 	AbilitySystem = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystem"));
+
+	AttributeSet = CreateDefaultSubobject<UBasicBattleAttributeSet>(TEXT("AttributeSet"));
 
 	// Activate ticking in order to update the cursor every frame.
 	PrimaryActorTick.bCanEverTick = true;

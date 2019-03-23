@@ -55,6 +55,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Damage")
 		void AttackHit();
 
+	UFUNCTION(BlueprintCallable, Category = "Damage")
+		float GiveDamage(const FHitResult & HitResult);
+
+	UFUNCTION(BlueprintNativeEvent, Category = "Animation")
+		void PlayHitAction();
+	
 	UCameraComponent* GetCamera() {	return TopDownCameraComponent; }
 
 public : 
@@ -91,8 +97,11 @@ public :
 	UPROPERTY(config)
 		TArray<FStringAssetReference>CharacterAssets;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "State")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "State")
 		bool isAttacking;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "State")
+		bool isAlive;
 
 	UPROPERTY(config)
 		FStringClassReference AnimAssetClass;
@@ -100,7 +109,6 @@ public :
 private:
 	TSharedPtr<FCollisionObjectQueryParams> GetTraceObject(const TArray<ECollisionChannel>& channels);
 	TSharedPtr<FCollisionQueryParams> GetTraceParams();
-	void GiveDamage(const FHitResult & HitResult);
 
 private:
 	/** Top down camera */

@@ -77,10 +77,13 @@ void ABasicBattleCharacter::BeginPlay()
 		actorInfo->InitFromActor(this, this, AbilitySystem);
 		AbilitySystem->AbilityActorInfo = TSharedPtr<FGameplayAbilityActorInfo>(actorInfo);
 
-		if (HasAuthority() && Ability)
+		if (HasAuthority() && GamePlayAbilities.Num())
 		{
-			AbilitySystem->GiveAbility(FGameplayAbilitySpec(Ability.GetDefaultObject(), 1, 0));
-			AbilitySystem->GiveAbility(FGameplayAbilitySpec(Ability.GetDefaultObject(), 1, 1));
+			for (int i = 0; i < GamePlayAbilities.Num(); i++)
+			{
+				if (GamePlayAbilities[i])
+					AbilitySystem->GiveAbility(FGameplayAbilitySpec(GamePlayAbilities[i].GetDefaultObject(), 1, i));
+			}
 		}
 		AbilitySystem->InitAbilityActorInfo(this, this);
 	}
@@ -175,6 +178,33 @@ void ABasicBattleCharacter::AttackHit()
 	if (GetWorld()->SweepSingleByObjectType(HitResult, StartPos, EndPos, FQuat(), *TraceObject, FCollisionShape::MakeSphere(50.0f), *TraceParams))
 		GiveDamage(HitResult);
 		
+}
+
+TArray<AActor*> ABasicBattleCharacter::AttackRadialHit()
+{
+	TArray<FOverlapResult> overlaps;
+	float Radius = 150.0f;
+
+	GetWorld()->OverlapMultiByChannel(
+		//output list
+		overlaps,
+		//origin location
+		GetActorLocation(),
+		//origin rotation
+		FQuat::Identity,
+		//collision channel
+		ECollisionChannel::ECC_Pawn,
+		//collision primitive
+		FCollisionShape::MakeSphere(Radius),
+		//collision parameters
+		FCollisionQueryParams());
+
+	TArray<AActor*> ActorList;
+
+	for (FOverlapResult& hit : overlaps)
+		ActorList.Emplace(hit.GetActor());
+
+	return ActorList;
 }
 
 TSharedPtr<FCollisionObjectQueryParams> ABasicBattleCharacter::GetTraceObject(const TArray<ECollisionChannel>& channels)

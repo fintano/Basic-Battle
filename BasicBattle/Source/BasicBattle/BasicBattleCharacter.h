@@ -57,6 +57,9 @@ public:
 		void AttackHit();
 
 	UFUNCTION(BlueprintCallable, Category = "Damage")
+		TArray<AActor*> AttackRadialHit();
+
+	UFUNCTION(BlueprintCallable, Category = "Damage")
 		float GiveDamage(const FHitResult & HitResult);
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Animation")
@@ -87,7 +90,7 @@ public :
 		class UAbilitySystemComponent* AbilitySystem;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Abilities)
-		TSubclassOf<class UGameplayAbility> Ability;
+		TArray<TSubclassOf<class UGameplayAbility>> GamePlayAbilities;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		UBasicBattleAttributeSet* AttributeSet;

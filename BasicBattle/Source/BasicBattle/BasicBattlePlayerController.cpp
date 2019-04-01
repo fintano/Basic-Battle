@@ -41,19 +41,19 @@ void ABasicBattlePlayerController::SetupInputComponent()
 	// set up gameplay key bindings
 	Super::SetupInputComponent();
 
-	InputComponent->BindAction("SetDestination", IE_Pressed, this, &ABasicBattlePlayerController::OnSetDestinationPressed);
-	InputComponent->BindAction("SetDestination", IE_Released, this, &ABasicBattlePlayerController::OnSetDestinationReleased);
+	//InputComponent->BindAction("SetDestination", IE_Pressed, this, &ABasicBattlePlayerController::OnSetDestinationPressed);
+	//InputComponent->BindAction("SetDestination", IE_Released, this, &ABasicBattlePlayerController::OnSetDestinationReleased);
 
 	// support touch devices 
-	InputComponent->BindTouch(EInputEvent::IE_Pressed, this, &ABasicBattlePlayerController::MoveToTouchLocation);
-	InputComponent->BindTouch(EInputEvent::IE_Repeat, this, &ABasicBattlePlayerController::MoveToTouchLocation);
+	//InputComponent->BindTouch(EInputEvent::IE_Pressed, this, &ABasicBattlePlayerController::MoveToTouchLocation);
+	//InputComponent->BindTouch(EInputEvent::IE_Repeat, this, &ABasicBattlePlayerController::MoveToTouchLocation);
 
-	InputComponent->BindAction("ResetVR", IE_Pressed, this, &ABasicBattlePlayerController::OnResetVR);
+	//InputComponent->BindAction("ResetVR", IE_Pressed, this, &ABasicBattlePlayerController::OnResetVR);
 
 	Super::SetupInputComponent();
 	//InputComponent->BindAxis("MoveRight", this, &AABPlayerController::LeftRightInput);
 	//InputComponent->BindAxis("MoveForward", this, &AABPlayerController::UpDownInput);
-
+	/*
 	InputComponent->BindAxis("MoveForward", this, &ABasicBattlePlayerController::MoveForward);
 	InputComponent->BindAxis("MoveRight", this, &ABasicBattlePlayerController::MoveRight);
 	InputComponent->BindAxis("Turn", this, &ABasicBattlePlayerController::Turn);
@@ -67,6 +67,7 @@ void ABasicBattlePlayerController::SetupInputComponent()
 	InputComponent->BindAction("Jump", IE_Released, this, &ABasicBattlePlayerController::JumpIfNotInput);
 	InputComponent->BindAction("Attack", IE_Pressed, this, &ABasicBattlePlayerController::Attack);
 	InputComponent->BindAction("Attack", IE_Released, this, &ABasicBattlePlayerController::NotAttack);
+	*/
 }
 
 void ABasicBattlePlayerController::MoveForward(float NewInputVal)
@@ -134,6 +135,7 @@ void ABasicBattlePlayerController::Attack()
 
 void ABasicBattlePlayerController::NotAttack()
 {
+	PlayerCharacter->isAttacking = false;
 }
 
 void ABasicBattlePlayerController::Slot1()

@@ -60,9 +60,7 @@ ABasicBattleCharacter::ABasicBattleCharacter()
 
 	// Our ability system component.
 	AbilitySystem = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystem"));
-
 	AttributeSet = CreateDefaultSubobject<UBasicBattleAttributeSet>(TEXT("AttributeSet"));
-
 	// Activate ticking in order to update the cursor every frame.
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = true;
@@ -183,9 +181,11 @@ void ABasicBattleCharacter::AttackHit()
 TArray<AActor*> ABasicBattleCharacter::AttackRadialHit()
 {
 	TArray<FOverlapResult> overlaps;
-	float Radius = 150.0f;
+	float Radius = 300.0f;
+	auto TraceParams = GetTraceParams();
+	auto TraceObject = GetTraceObject(TArray<ECollisionChannel>{ECC_Pawn});
 
-	GetWorld()->OverlapMultiByChannel(
+	GetWorld()->OverlapMultiByObjectType(
 		//output list
 		overlaps,
 		//origin location
@@ -193,16 +193,16 @@ TArray<AActor*> ABasicBattleCharacter::AttackRadialHit()
 		//origin rotation
 		FQuat::Identity,
 		//collision channel
-		ECollisionChannel::ECC_Pawn,
+		*TraceObject,
 		//collision primitive
 		FCollisionShape::MakeSphere(Radius),
 		//collision parameters
-		FCollisionQueryParams());
+		*TraceParams);
 
 	TArray<AActor*> ActorList;
 
 	for (FOverlapResult& hit : overlaps)
-		ActorList.Emplace(hit.GetActor());
+		ActorList.AddUnique(hit.GetActor());
 
 	return ActorList;
 }

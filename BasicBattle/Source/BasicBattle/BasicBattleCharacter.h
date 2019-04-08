@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "AbilitySystemInterface.h"
 #include "GameFramework/Character.h"
+#include "GameplayTagContainer.h"
 #include "BasicBattleCharacter.generated.h"
 
 
@@ -16,7 +17,7 @@ enum class AbilityInput : uint8
 {
 	UseAbility1 UMETA(DisplayName = "Use Spell 1"), //This maps the first ability(input ID should be 0 in int) to the action mapping(which you define in the project settings) by the name of "UseAbility1". "Use Spell 1" is the blueprint name of the element.
 	UseAbility2 UMETA(DisplayName = "Use Spell 2"), //Maps ability 2(input ID 1) to action mapping UseAbility2. "Use Spell 2" is mostly used for when the enum is a blueprint variable.
-	UseAbility3 UMETA(DisplayName = "Use Spell 3"),
+	UseAbility3 UMETA(DisplayName = "GA TheSymbolOfEmpire"),
 	UseAbility4 UMETA(DisplayName = "Use Spell 4"),
 	WeaponAbility UMETA(DisplayName = "Use Weapon"), //This finally maps the fifth ability(here designated to be your weaponability, or auto-attack, or whatever) to action mapping "WeaponAbility".
 

@@ -24,6 +24,7 @@ void ABasicBattleEnemyCharacter::PossessedBy(AController* NewController)
 	//	AbilitySystem->InitAbilityActorInfo(this, this);
 	//	AddStartupGameplayAbilities();
 	//}
+	AbilitySystem->RefreshAbilityActorInfo();
 }
 
 // Called when the game starts or when spawned
@@ -31,6 +32,13 @@ void ABasicBattleEnemyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	if (AbilitySystem)
+	{
+		FGameplayAbilityActorInfo* actorInfo = new FGameplayAbilityActorInfo();
+		actorInfo->InitFromActor(this, this, AbilitySystem);
+		AbilitySystem->AbilityActorInfo = TSharedPtr<FGameplayAbilityActorInfo>(actorInfo);
+		AbilitySystem->InitAbilityActorInfo(this, this);
+	}
 }
 
 // Called every frame
@@ -44,7 +52,7 @@ void ABasicBattleEnemyCharacter::Tick(float DeltaTime)
 void ABasicBattleEnemyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
+	AbilitySystem->BindAbilityActivationToInputComponent(PlayerInputComponent, FGameplayAbilityInputBinds("ConfirmInput", "CancelInput", "AbilityInput"));
 }
 
 void ABasicBattleEnemyCharacter::DoAttack_Implementation()

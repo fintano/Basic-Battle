@@ -15,6 +15,8 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Engine/World.h"
+#include "AbilitySystemComponent.h"
+#include "BasicBattleAttributeSet.h"
 
 ABasicBattleCharacter::ABasicBattleCharacter()
 {
@@ -56,6 +58,11 @@ ABasicBattleCharacter::ABasicBattleCharacter()
 	CursorToWorld->DecalSize = FVector(16.0f, 32.0f, 32.0f);
 	CursorToWorld->SetRelativeRotation(FRotator(90.0f, 0.0f, 0.0f).Quaternion());
 
+	// Our ability system component.
+	AbilitySystem = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystem"));
+
+	AttributeSet = CreateDefaultSubobject<UBasicBattleAttributeSet>(TEXT("AttributeSet"));
+
 	// Activate ticking in order to update the cursor every frame.
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = true;
@@ -64,6 +71,22 @@ ABasicBattleCharacter::ABasicBattleCharacter()
 void ABasicBattleCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+	if (AbilitySystem)
+	{
+		FGameplayAbilityActorInfo* actorInfo = new FGameplayAbilityActorInfo();
+		actorInfo->InitFromActor(this, this, AbilitySystem);
+		AbilitySystem->AbilityActorInfo = TSharedPtr<FGameplayAbilityActorInfo>(actorInfo);
+
+		if (HasAuthority() && GamePlayAbilities.Num())
+		{
+			for (int i = 0; i < GamePlayAbilities.Num(); i++)
+			{
+				if (GamePlayAbilities[i])
+					AbilitySystem->GiveAbility(FGameplayAbilitySpec(GamePlayAbilities[i].GetDefaultObject(), 1, i));
+			}
+		}
+		AbilitySystem->InitAbilityActorInfo(this, this);
+	}
 }
 
 void ABasicBattleCharacter::Tick(float DeltaSeconds)
@@ -102,6 +125,7 @@ void ABasicBattleCharacter::Tick(float DeltaSeconds)
 void ABasicBattleCharacter::SetupPlayerInputComponent(UInputComponent * PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+	AbilitySystem->BindAbilityActivationToInputComponent(PlayerInputComponent, FGameplayAbilityInputBinds("ConfirmInput", "CancelInput", "AbilityInput"));
 }
 
 void ABasicBattleCharacter::PossessedBy(AController * NewController)
@@ -112,6 +136,8 @@ void ABasicBattleCharacter::PossessedBy(AController * NewController)
 		UE_LOG(LogClass, Warning, TEXT("Loading Character Anim Asset.. "));
 		GetMesh()->SetAnimInstanceClass(AnimInstanceClass);
 	}
+
+	AbilitySystem->RefreshAbilityActorInfo();
 }
 
 float ABasicBattleCharacter::TakeDamage(float Damage, const FDamageEvent & DamageEvent, AController * EventInstigator, AActor * DamageCauser)
@@ -152,6 +178,33 @@ void ABasicBattleCharacter::AttackHit()
 	if (GetWorld()->SweepSingleByObjectType(HitResult, StartPos, EndPos, FQuat(), *TraceObject, FCollisionShape::MakeSphere(50.0f), *TraceParams))
 		GiveDamage(HitResult);
 		
+}
+
+TArray<AActor*> ABasicBattleCharacter::AttackRadialHit()
+{
+	TArray<FOverlapResult> overlaps;
+	float Radius = 150.0f;
+
+	GetWorld()->OverlapMultiByChannel(
+		//output list
+		overlaps,
+		//origin location
+		GetActorLocation(),
+		//origin rotation
+		FQuat::Identity,
+		//collision channel
+		ECollisionChannel::ECC_Pawn,
+		//collision primitive
+		FCollisionShape::MakeSphere(Radius),
+		//collision parameters
+		FCollisionQueryParams());
+
+	TArray<AActor*> ActorList;
+
+	for (FOverlapResult& hit : overlaps)
+		ActorList.Emplace(hit.GetActor());
+
+	return ActorList;
 }
 
 TSharedPtr<FCollisionObjectQueryParams> ABasicBattleCharacter::GetTraceObject(const TArray<ECollisionChannel>& channels)
@@ -216,4 +269,9 @@ float ABasicBattleCharacter::GiveDamage(const FHitResult & HitResult)
 void ABasicBattleCharacter::PlayHitAction_Implementation()
 {
 	return;
+}
+
+UAbilitySystemComponent * ABasicBattleCharacter::GetAbilitySystemComponent() const
+{
+	return AbilitySystem;
 }

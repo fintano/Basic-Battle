@@ -2,6 +2,8 @@
 
 #include "BasicBattleEnemyCharacter.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "BasicBattleAttributeSet.h"
+#include "AbilitySystemComponent.h"
 #include "Engine/World.h"
 
 // Sets default values
@@ -9,7 +11,20 @@ ABasicBattleEnemyCharacter::ABasicBattleEnemyCharacter()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+	// Our ability system component.
+	AbilitySystem = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("EnemyAbilitySystem"));
 
+	AttributeSet = CreateDefaultSubobject<UBasicBattleAttributeSet>(TEXT("EnemyAttributeSet"));
+}
+
+void ABasicBattleEnemyCharacter::PossessedBy(AController* NewController)
+{
+	// Initialize our abilities
+	//if (AbilitySystem)
+	//{
+	//	AbilitySystem->InitAbilityActorInfo(this, this);
+	//	AddStartupGameplayAbilities();
+	//}
 }
 
 // Called when the game starts or when spawned
@@ -47,23 +62,22 @@ void ABasicBattleEnemyCharacter::DoAction(EAction action)
 {
 	switch (action)
 	{
-	case ACTION_ATTACK : 
+	case ACTION_ATTACK:
 	{
 		CheckAttackAction(action);
 	}
 	break;
-	case ACTION_SKILL_HASTE : 
-	case ACTION_SKILL_SPECIAL_ATTACK :
+	case ACTION_SKILL_HASTE:
+	case ACTION_SKILL_SPECIAL_ATTACK:
 	{
 		CheckSkillAction(action);
 	}
 	break;
-	default : 
+	default:
 		break;
 
 	}
 }
-
 TSharedPtr<FCollisionObjectQueryParams> ABasicBattleEnemyCharacter::GetTraceObject(const TArray<ECollisionChannel>& channels)
 {
 	auto TraceObject = MakeShared<FCollisionObjectQueryParams>();
@@ -85,55 +99,6 @@ TSharedPtr<FCollisionQueryParams> ABasicBattleEnemyCharacter::GetTraceParams()
 	//Ignore Actors
 	TraceParams->AddIgnoredActor(this);
 	return TraceParams;
-}
-
-void ABasicBattleEnemyCharacter::CheckAttackAction(EAction action)
-{
-	float CurrentTime = GetWorld()->GetTimeSeconds();
-
-	if (CurrentTime >= lastAttackTime)
-	{
-		DoAttack();
-		lastAttackTime = CurrentTime + (attackCooldown * haste);
-	}
-}
-
-void ABasicBattleEnemyCharacter::CheckSkillAction(EAction action)
-{
-	float CurrentTime = GetWorld()->GetTimeSeconds();
-
-	switch (action)
-	{
-	case ACTION_SKILL_HASTE:
-	{
-		if (CurrentTime >= lastSkill1Time)
-		{
-			if (haste > 0.5f)
-			{
-				haste = 0.5f;
-			}
-			else
-			{
-				haste = 3.0f;
-			}
-
-			lastSkill1Time = CurrentTime + skill1Cooldown;
-		}
-	}
-	break;
-	case ACTION_SKILL_SPECIAL_ATTACK : 
-	{
-		if (CurrentTime >= lastSkill2Time)
-		{
-			DoSkill(action);
-
-			lastSkill2Time = CurrentTime + skill2Cooldown;
-		}
-	}
-	break;
-	default : 
-		break;
-	}
 }
 
 void ABasicBattleEnemyCharacter::AttackHit()
@@ -184,4 +149,58 @@ float ABasicBattleEnemyCharacter::GiveDamage(const FHitResult & HitResult)
 	float ResultDamage = HitResult.GetActor()->TakeDamage(FinalDamage, PointDamageEvent, GetController(), this);
 
 	return ResultDamage;
+}
+
+void ABasicBattleEnemyCharacter::CheckAttackAction(EAction action)
+{
+	float CurrentTime = GetWorld()->GetTimeSeconds();
+
+	if (CurrentTime >= lastAttackTime)
+	{
+		DoAttack();
+		lastAttackTime = CurrentTime + (attackCooldown * haste);
+	}
+}
+
+void ABasicBattleEnemyCharacter::CheckSkillAction(EAction action)
+{
+	float CurrentTime = GetWorld()->GetTimeSeconds();
+
+	switch (action)
+	{
+	case ACTION_SKILL_HASTE:
+	{
+		if (CurrentTime >= lastSkill1Time)
+		{
+			if (haste > 0.5f)
+			{
+				haste = 0.5f;
+			}
+			else
+			{
+				haste = 3.0f;
+			}
+
+			lastSkill1Time = CurrentTime + skill1Cooldown;
+		}
+	}
+	break;
+	case ACTION_SKILL_SPECIAL_ATTACK:
+	{
+		if (CurrentTime >= lastSkill2Time)
+		{
+			DoSkill(action);
+
+			lastSkill2Time = CurrentTime + skill2Cooldown;
+		}
+	}
+	break;
+	default:
+		break;
+	}
+}
+
+UAbilitySystemComponent * ABasicBattleEnemyCharacter::GetAbilitySystemComponent() const
+{
+	return AbilitySystem;
 }

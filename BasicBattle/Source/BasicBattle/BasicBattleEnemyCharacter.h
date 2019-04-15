@@ -4,7 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "AbilitySystemInterface.h"
 #include "BasicBattleEnemyCharacter.generated.h"
+
+class UBasicBattleAttributeSet;
 
 UENUM(BlueprintType)
 enum EAction
@@ -15,13 +18,14 @@ enum EAction
 };
 
 UCLASS()
-class BASICBATTLE_API ABasicBattleEnemyCharacter : public ACharacter
+class BASICBATTLE_API ABasicBattleEnemyCharacter : public ACharacter, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this character's properties
 	ABasicBattleEnemyCharacter();
+	virtual void PossessedBy(AController* NewController) override;
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Action")
 		void DoAttack();
@@ -52,6 +56,8 @@ public:
 private:
 	TSharedPtr<FCollisionObjectQueryParams> GetTraceObject(const TArray<ECollisionChannel>& channels);
 	TSharedPtr<FCollisionQueryParams> GetTraceParams();
+	// Inherited via IAbilitySystemInterface
+	virtual UAbilitySystemComponent * GetAbilitySystemComponent() const override;
 	void CheckAttackAction(EAction action);
 	void CheckSkillAction(EAction action);
 
@@ -69,12 +75,18 @@ public :
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "State")
 		bool isAlive;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Abilities, meta = (AllowPrivateAccess = "true"))
+		class UAbilitySystemComponent* AbilitySystem;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+		UBasicBattleAttributeSet* AttributeSet;
+
 private : 
-		float haste = 1.0f;
-		float lastAttackTime = 0.0f;
-		float attackCooldown = 1.0f;
-		float lastSkill1Time = 0.0f;
-		float skill1Cooldown = 12.0f;
-		float lastSkill2Time = 0.0f;
-		float skill2Cooldown = 5.0f;
+	float haste = 1.0f;
+	float lastAttackTime = 0.0f;
+	float attackCooldown = 1.0f;
+	float lastSkill1Time = 0.0f;
+	float skill1Cooldown = 12.0f;
+	float lastSkill2Time = 0.0f;
+	float skill2Cooldown = 5.0f;
 };

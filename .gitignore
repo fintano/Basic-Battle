@@ -4,5 +4,6 @@ BasicBattle/Binaries/
 BasicBattle/.vs/BasicBattle/
 BasicBattle/Content/Animations/
 BasicBattle/Content/ParagonGreyStone/
+!BasicBattle/Content/ParagonGreystone/Characters/Heroes/Greystone/Animations/Ability_R_Montage.uasset
 BasicBattle/Content/ParagonMorigesh/
 BasicBattle/BasicBattle.sln
